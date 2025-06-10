@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shield background -->
+  <path d="M16 2L4 7V16C4 22.6274 9.37258 28 16 28C22.6274 28 28 22.6274 28 16V7L16 2Z" fill="#1E3A8A"/>
+  <!-- Lock body -->
+  <rect x="12" y="14" width="8" height="6" rx="2" fill="white"/>
+  <!-- Lock shackle -->
+  <path d="M14 14V10C14 8.34315 15.3431 7 17 7C18.6569 7 20 8.34315 20 10V14" stroke="white" stroke-width="2"/>
+</svg> 
