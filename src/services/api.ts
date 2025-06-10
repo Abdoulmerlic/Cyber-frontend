@@ -1,13 +1,14 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, AxiosError } from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://cyber-backend-h10y8ier6-abdoulmerlics-projects.vercel.app/api";
+const API_URL = "https://cyber-backend-h10y8ier6-abdoulmerlics-projects.vercel.app/api";
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
+    "Accept": "application/json"
   },
-  withCredentials: true, // Enable sending cookies
+  withCredentials: true // Enable credentials for CORS
 });
 
 // Add request interceptor to add token to headers
@@ -170,8 +171,19 @@ export const api = {
   },
   auth: {
     login: async (credentials: { email: string; password: string }) => {
-      const response = await axiosInstance.post('/auth/login', credentials);
-      return response.data;
+      try {
+        console.log('Attempting login to:', `${API_URL}/auth/login`);
+        const response = await axiosInstance.post('/auth/login', credentials);
+        console.log('Login response:', response.data);
+        return response.data;
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          console.error('Login error:', error.response?.data || error.message);
+        } else {
+          console.error('Login error:', error);
+        }
+        throw error;
+      }
     },
     register: async (userData: { 
       email: string; 
