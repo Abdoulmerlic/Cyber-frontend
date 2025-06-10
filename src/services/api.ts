@@ -1,6 +1,9 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
 
-const API_URL = "https://cyber-backend-h10y8ier6-abdoulmerlics-projects.vercel.app/api";
+// Log the environment variable to confirm it's loaded
+console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
+
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_URL,
