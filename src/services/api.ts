@@ -1,17 +1,15 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
-
 // Log the environment variable to confirm it's loaded
 console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
 
-const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
-
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}`;
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
     "Accept": "application/json"
   },
-  withCredentials: true // Enable credentials for CORS
+  withCredentials: false // Changed to false since we're using token-based auth
 });
 
 // Add request interceptor to add token to headers
@@ -27,6 +25,18 @@ axiosInstance.interceptors.request.use((config) => {
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
+    if (error instanceof AxiosError) {
+      console.error('API Error:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          headers: error.config?.headers
+        }
+      });
+    }
+    
     const originalRequest = error.config;
     
     if (error.response?.status === 401 && !originalRequest._retry) {
