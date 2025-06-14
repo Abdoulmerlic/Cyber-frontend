@@ -43,7 +43,7 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
       
       try {
-        const response = await axiosInstance.post('/auth/refresh-token');
+        const response = await axiosInstance.post('/api/auth/refresh-token');
         const { token } = response.data;
         localStorage.setItem('token', token);
         originalRequest.headers.Authorization = `Bearer ${token}`;
@@ -108,15 +108,15 @@ export interface ArticleResponse {
 export const api = {
   articles: {
     getAll: async (params?: { category?: string; tag?: string; search?: string; page?: number; limit?: number }) => {
-      const response = await axiosInstance.get('/articles', { params });
+      const response = await axiosInstance.get('/api/articles', { params });
       return response.data;
     },
     getById: async (id: string) => {
-      const response = await axiosInstance.get(`/articles/${id}`);
+      const response = await axiosInstance.get(`/api/articles/${id}`);
       return response.data;
     },
     create: async (formData: FormData) => {
-      const response = await axiosInstance.post('/articles', formData, {
+      const response = await axiosInstance.post('/api/articles', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -124,7 +124,7 @@ export const api = {
       return response.data;
     },
     update: async (id: string, formData: FormData) => {
-      const response = await axiosInstance.put(`/articles/${id}`, formData, {
+      const response = await axiosInstance.put(`/api/articles/${id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -132,50 +132,50 @@ export const api = {
       return response.data;
     },
     delete: async (id: string) => {
-      const response = await axiosInstance.delete(`/articles/${id}`);
+      const response = await axiosInstance.delete(`/api/articles/${id}`);
       return response.data;
     },
     like: async (id: string) => {
-      const response = await axiosInstance.post(`/articles/${id}/like`);
+      const response = await axiosInstance.post(`/api/articles/${id}/like`);
       return response.data;
     },
     addComment: async (id: string, data: { content: string }) => {
-      const response = await axiosInstance.post(`/articles/${id}/comments`, data);
+      const response = await axiosInstance.post(`/api/articles/${id}/comments`, data);
       return response.data;
     },
     deleteComment: async (articleId: string, commentId: string) => {
-      const response = await axiosInstance.delete(`/articles/${articleId}/comments/${commentId}`);
+      const response = await axiosInstance.delete(`/api/articles/${articleId}/comments/${commentId}`);
       return response.data;
     }
   },
   securityTips: {
     getAll: async (): Promise<SecurityTip[]> => {
-      const response = await axiosInstance.get('/security-tips');
+      const response = await axiosInstance.get('/api/security-tips');
       return response.data;
     },
     getById: async (id: string): Promise<SecurityTip> => {
-      const response = await axiosInstance.get(`/security-tips/${id}`);
+      const response = await axiosInstance.get(`/api/security-tips/${id}`);
       return response.data;
     },
     getRandom: async (): Promise<SecurityTip> => {
-      const response = await axiosInstance.get('/security-tips/random');
+      const response = await axiosInstance.get('/api/security-tips/random');
       return response.data;
     }
   },
   bookmarks: {
     getAll: async (): Promise<Article[]> => {
-      const response = await axiosInstance.get('/bookmarks');
+      const response = await axiosInstance.get('/api/bookmarks');
       return response.data;
     },
     add: async (articleId: string): Promise<void> => {
-      await axiosInstance.post(`/bookmarks/${articleId}`);
+      await axiosInstance.post(`/api/bookmarks/${articleId}`);
     },
     remove: async (articleId: string): Promise<void> => {
-      await axiosInstance.delete(`/bookmarks/${articleId}`);
+      await axiosInstance.delete(`/api/bookmarks/${articleId}`);
     },
     isBookmarked: async (articleId: string): Promise<boolean> => {
       try {
-        await axiosInstance.get(`/bookmarks/${articleId}`);
+        await axiosInstance.get(`/api/bookmarks/${articleId}`);
         return true;
       } catch (error) {
         return false;
@@ -185,8 +185,8 @@ export const api = {
   auth: {
     login: async (credentials: { email: string; password: string }) => {
       try {
-        console.log('Attempting login to:', `${API_URL}/auth/login`);
-        const response = await axiosInstance.post('/auth/login', credentials);
+        console.log('Attempting login to:', `${API_URL}/api/auth/login`);
+        const response = await axiosInstance.post('/api/auth/login', credentials);
         console.log('Login response:', response.data);
         return response.data;
       } catch (error) {
