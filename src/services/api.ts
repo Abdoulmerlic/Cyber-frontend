@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosError } from "axios";
 // Log the environment variable to confirm it's loaded
 console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
 
-const API_URL = `${import.meta.env.VITE_API_BASE_URL}`;
+const API_URL = `https://cyber-backend-yyzr.onrender.com`;
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
