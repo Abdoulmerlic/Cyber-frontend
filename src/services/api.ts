@@ -211,7 +211,7 @@ export const api = {
       return response.data;
     },
     getCurrentUser: async () => {
-      const response = await axiosInstance.get('/auth/me');
+      const response = await axiosInstance.get('/api/auth/me');
       return response.data;
     },
     refreshToken: async () => {
