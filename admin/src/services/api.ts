@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const baseURL = 'https://cyber-backend-yyzr.onrender.com'
+const baseURL = import.meta.env.VITE_API_URL
 
 export const api = axios.create({
   baseURL,
@@ -57,6 +57,14 @@ export const adminService = {
   },
   deleteArticle: async (articleId: string) => {
     const response = await api.delete(`/api/articles/${articleId}`)
+    return response.data
+  },
+  freezeUser: async (userId: string) => {
+    const response = await api.put(`/api/users/${userId}/freeze`)
+    return response.data
+  },
+  unfreezeUser: async (userId: string) => {
+    const response = await api.put(`/api/users/${userId}/unfreeze`)
     return response.data
   }
 } 

@@ -16,18 +16,37 @@ export default function ArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const limit = 10
 
   useEffect(() => {
     fetchArticles()
-  }, [])
+  }, [currentPage])
 
   const fetchArticles = async () => {
     try {
-      const response = await api.get('/api/admin/articles')
-      setArticles(response.data)
+      setLoading(true)
+      setError('')
+      const response = await api.get('/api/admin/articles', {
+        params: { page: currentPage, limit }
+      })
+      // Support both array and object response
+      if (Array.isArray(response.data)) {
+        setArticles(response.data)
+        setTotalPages(1)
+      } else if (response.data && response.data.articles) {
+        setArticles(response.data.articles)
+        setTotalPages(response.data.totalPages || 1)
+      } else {
+        setArticles([])
+        setTotalPages(1)
+      }
     } catch (error) {
       console.error('Failed to fetch articles:', error)
       setError('Failed to load articles')
+      setArticles([])
+      setTotalPages(1)
     } finally {
       setLoading(false)
     }
@@ -147,6 +166,30 @@ export default function ArticlesPage() {
           </div>
         </div>
       </div>
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-4 flex justify-center">
+          <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </nav>
+        </div>
+      )}
     </div>
   )
 } 

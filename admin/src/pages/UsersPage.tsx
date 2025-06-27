@@ -7,6 +7,7 @@ interface User {
   email: string
   createdAt: string
   isAdmin: boolean
+  isFrozen?: boolean
 }
 
 interface UsersResponse {
@@ -31,7 +32,10 @@ export default function UsersPage() {
     try {
       setError('')
       const response = await adminService.getUsers(currentPage)
-      if (response && response.users) {
+      if (Array.isArray(response)) {
+        setUsers(response)
+        setTotalPages(1)
+      } else if (response && response.users) {
         setUsers(response.users)
         setTotalPages(response.totalPages || 1)
       } else {
@@ -58,6 +62,28 @@ export default function UsersPage() {
     } catch (error) {
       console.error('Failed to delete user:', error)
       setError('Failed to delete user')
+    }
+  }
+
+  const handleEditUser = (user: User) => {
+    alert(`Edit user: ${user.username}`)
+  }
+
+  const handleChangePassword = (user: User) => {
+    alert(`Change password for: ${user.username}`)
+  }
+
+  const handleToggleFreeze = async (user: User) => {
+    try {
+      if (user.isFrozen) {
+        await adminService.unfreezeUser(user._id)
+        setUsers(prev => prev.map(u => u._id === user._id ? { ...u, isFrozen: false } : u))
+      } else {
+        await adminService.freezeUser(user._id)
+        setUsers(prev => prev.map(u => u._id === user._id ? { ...u, isFrozen: true } : u))
+      }
+    } catch (error) {
+      setError('Failed to update freeze status')
     }
   }
 
@@ -117,6 +143,12 @@ export default function UsersPage() {
                     >
                       Joined
                     </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
+                      Status
+                    </th>
                     <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
                       <span className="sr-only">Actions</span>
                     </th>
@@ -138,7 +170,28 @@ export default function UsersPage() {
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           {new Date(user.createdAt).toLocaleDateString()}
                         </td>
-                        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                          {user.isFrozen ? 'Frozen' : 'Active'}
+                        </td>
+                        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 space-x-2">
+                          <button
+                            onClick={() => handleEditUser(user)}
+                            className="text-blue-600 hover:text-blue-900"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleChangePassword(user)}
+                            className="text-yellow-600 hover:text-yellow-900"
+                          >
+                            Change Password
+                          </button>
+                          <button
+                            onClick={() => handleToggleFreeze(user)}
+                            className={user.isFrozen ? "text-green-600 hover:text-green-900" : "text-gray-600 hover:text-gray-900"}
+                          >
+                            {user.isFrozen ? 'Unfreeze' : 'Freeze'}
+                          </button>
                           <button
                             onClick={() => handleDeleteUser(user._id)}
                             className="text-red-600 hover:text-red-900"
