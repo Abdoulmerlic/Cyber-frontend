@@ -203,11 +203,11 @@ export const api = {
       password: string; 
       username: string;
     }) => {
-      const response = await axiosInstance.post('/auth/register', userData);
+      const response = await axiosInstance.post('/api/auth/register', userData);
       return response.data;
     },
     logout: async () => {
-      const response = await axiosInstance.post('/auth/logout');
+      const response = await axiosInstance.post('/api/auth/logout');
       return response.data;
     },
     getCurrentUser: async () => {
@@ -215,7 +215,7 @@ export const api = {
       return response.data;
     },
     refreshToken: async () => {
-      const response = await axiosInstance.post('/auth/refresh-token');
+      const response = await axiosInstance.post('/api/auth/refresh-token');
       return response.data;
     },
     updateProfile: async (profileData: {
@@ -224,18 +224,18 @@ export const api = {
       bio?: string;
       profilePicture?: string;
     }) => {
-      const response = await axiosInstance.put('/auth/profile', profileData);
+      const response = await axiosInstance.put('/api/auth/profile', profileData);
       return response.data;
     },
     changePassword: async (passwordData: {
       currentPassword: string;
       newPassword: string;
     }) => {
-      const response = await axiosInstance.put('/auth/change-password', passwordData);
+      const response = await axiosInstance.put('/api/auth/change-password', passwordData);
       return response.data;
     },
     deleteAccount: async () => {
-      const response = await axiosInstance.delete('/auth/account');
+      const response = await axiosInstance.delete('/api/auth/account');
       return response.data;
     }
   }
