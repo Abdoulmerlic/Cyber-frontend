@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react'
-import { api } from '../services/api'
+import { adminService } from '../services/api'
 
 interface Article {
-  id: string
+  _id: string
   title: string
   author: {
-    name: string
-    email: string
+    _id: string
+    username: string
   }
   createdAt: string
-  status: 'published' | 'draft'
+  status?: 'published' | 'draft'
 }
 
 export default function ArticlesPage() {
@@ -28,16 +28,14 @@ export default function ArticlesPage() {
     try {
       setLoading(true)
       setError('')
-      const response = await api.get('/api/admin/articles', {
-        params: { page: currentPage, limit }
-      })
+      const response = await adminService.getArticles(currentPage, limit)
       // Support both array and object response
-      if (Array.isArray(response.data)) {
-        setArticles(response.data)
+      if (Array.isArray(response)) {
+        setArticles(response)
         setTotalPages(1)
-      } else if (response.data && response.data.articles) {
-        setArticles(response.data.articles)
-        setTotalPages(response.data.totalPages || 1)
+      } else if (response && response.articles) {
+        setArticles(response.articles)
+        setTotalPages(response.totalPages || 1)
       } else {
         setArticles([])
         setTotalPages(1)
@@ -58,8 +56,8 @@ export default function ArticlesPage() {
     }
 
     try {
-      await api.delete(`/api/admin/articles/${articleId}`)
-      setArticles(articles.filter(article => article.id !== articleId))
+      await adminService.deleteArticle(articleId)
+      setArticles(articles.filter(article => article._id !== articleId))
     } catch (error) {
       console.error('Failed to delete article:', error)
       setError('Failed to delete article')
@@ -129,12 +127,12 @@ export default function ArticlesPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {articles.map((article) => (
-                    <tr key={article.id}>
+                    <tr key={article._id}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                         {article.title}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {article.author.name}
+                        {article.author.username}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         <span
@@ -144,7 +142,7 @@ export default function ArticlesPage() {
                               : 'bg-yellow-100 text-yellow-800'
                           }`}
                         >
-                          {article.status}
+                          {article.status || 'published'}
                         </span>
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
@@ -152,7 +150,7 @@ export default function ArticlesPage() {
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                         <button
-                          onClick={() => handleDeleteArticle(article.id)}
+                          onClick={() => handleDeleteArticle(article._id)}
                           className="text-red-600 hover:text-red-900"
                         >
                           Delete
